@@ -23,6 +23,8 @@ function App() {
   useEffect(() => { // this is a useeffect hook that will run at the start of the app and get the access token from the api
 
     const getToken = async () => {
+      // wait 4 seconds before fetching the access token to simulate a loading screen
+      await new Promise(r => setTimeout(r, 3000))
       const response = await fetch('https://api.petfinder.com/v2/oauth2/token', {
         method: 'POST',
         body: `grant_type=client_credentials&client_id=${API_KEY}&client_secret=${API_SECRET}`,
@@ -43,7 +45,7 @@ function App() {
   useEffect(() => { // this is a useeffect hook that will run when the access token is set and get the pets from the api
 
     const getPets = async () => {
-      const response = await fetch('https://api.petfinder.com/v2/animals?limit=5', {
+      const response = await fetch('https://api.petfinder.com/v2/animals?limit=20', {
         headers: {
           Authorization: `Bearer ${access_token}`
         }
@@ -137,6 +139,18 @@ function App() {
       setFilteredPets(filteredPets)
     }
 
+
+    // if two of the three search fields are not empty then filter the pets array and set the filtered pets array
+    if (name && species && breed_primary) {
+      setFilteredPets(pets.filter(pet => {
+        if (pet.name.toLowerCase().includes(name.toLowerCase()) && pet.species.toLowerCase().includes(species.toLowerCase()) && pet.breeds.primary.toLowerCase().includes(breed_primary.toLowerCase())) {
+          return pet
+        }
+      }
+      ))
+    }
+
+
     filterPets()
 
   }, [name, species, breed_primary, pets])
@@ -153,21 +167,30 @@ function App() {
   }
 
   return (
-    <div className='App-container'>
+    // make the container wait 4 seconds before rendering the entire page to simulate a loading screen
 
+
+
+    <div className='App-container'>
+      {
+        pets.length > 0 ? 
       <div className='header'>
         <h1>Pet Adoption Search</h1>
         <input className="search-bar" type="text" placeholder="Pet Name" onChange={event => { setName(event.target.value) }} />
         <input className="search-bar" type="text" placeholder="Pet Breed" onChange={event => { setBreed_primary(event.target.value) }} />
         <input className="search-bar" type="text" placeholder="Pet Species" onChange={event => { setSpecies(event.target.value) }} />
+      </div> : <div className='loadingScreen'>
+        <h1>Loading...</h1>
+        <img src="src/assets/petfinder-logo.png"/>
       </div>
-      
+      }
       {
         // ternary operator to render the dashboard
         pets.length > 0 &&
         <div className='dashboard'>
           <div>
-            <h2>Number of pets: {filteredPets.length}</h2>
+            <h2>Number of pets: {filteredPets.length > 0 ? filteredPets.length : pets.length}</h2>
+            <img src="src/assets/petfinder-logo.png"/>
           </div>
           <div>
             <h2>Avg Age of Pets: {meanAge}</h2>
@@ -180,6 +203,10 @@ function App() {
         </div>
       }
 
+      {/* display the pet-container after the data has been loaded in  */}
+
+      {
+        pets.length > 0 &&
       <div className='Pet-container'>
         {filteredPets.length > 0 ? (
           filteredPets.map((pet) => (
@@ -209,6 +236,7 @@ function App() {
           ))
         )}
       </div>
+}
 
     </div>
   )
