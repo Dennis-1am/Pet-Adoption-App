@@ -1,15 +1,20 @@
 import { useEffect, useState, useRef } from 'react'
 import './App.css'
-import Pet from './components/Pet'
+import Pet from './components/pet'
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 const API_SECRET = import.meta.env.VITE_API_SECRET;
-
 
 function App() {
 
   const [access_token, setAccess_token] = useState('');
   const [pets, setPets] = useState([]);
+  const [filteredPets, setFilteredPets] = useState([]); // this is the state that will hold the filtered pets
+
+  const [name, setName] = useState(''); // this is the state that will hold the name of the pet
+  const [species, setSpecies] = useState(''); // this is the state that will hold the species of the pet
+  const [breed_primary, setBreed_primary] = useState(''); // this is the state that will hold the primary breed of the pet
+
   const [meanAge, setMeanAge] = useState(0);
   const [ageLabel, setAgeLabel] = useState('');
   const [maleCount, setMaleCount] = useState(0);
@@ -38,7 +43,7 @@ function App() {
   useEffect(() => { // this is a useeffect hook that will run when the access token is set and get the pets from the api
 
     const getPets = async () => {
-      const response = await fetch('https://api.petfinder.com/v2/animals?limit=100', {
+      const response = await fetch('https://api.petfinder.com/v2/animals?limit=5', {
         headers: {
           Authorization: `Bearer ${access_token}`
         }
@@ -57,7 +62,10 @@ function App() {
   useEffect(() => {
     const getMeanAge = () => {
       let totalAge = 0
-      pets.forEach(pet => {
+      
+      // ternary operator to check if the filtered pets array is empty or not is empty then use the pets array
+
+      filteredPets.length > 0 ? filteredPets.forEach(pet => {
         if (pet.age === 'Baby') {
           totalAge += 1
         } else if (pet.age === 'Young') {
@@ -65,9 +73,19 @@ function App() {
         } else if (pet.age === 'Adult') {
           totalAge += 3
         }
+      }) : pets.forEach(pet => {
+        if (pet.age === 'Baby') {
+          totalAge += 1
+        }
+        else if (pet.age === 'Young') {
+          totalAge += 2
+        }
+        else if (pet.age === 'Adult') {
+          totalAge += 3
+        }
       })
 
-      let meanAge_val = totalAge / pets.length
+      let meanAge_val = totalAge / (filteredPets.length > 0 ? filteredPets.length : pets.length)
 
       if (meanAge_val <= 1.5) {
         setAgeLabel('Baby')
@@ -84,7 +102,13 @@ function App() {
       let maleCount = 0
       let femaleCount = 0
 
-      pets.forEach(pet => {
+      filteredPets.length > 0 ? filteredPets.forEach(pet => {
+        if (pet.gender == 'Female') {
+          femaleCount += 1
+        } else if (pet.gender == 'Male') {
+          maleCount += 1
+        }
+      }) : pets.forEach(pet => {
         if (pet.gender == 'Female') {
           femaleCount += 1
         } else if (pet.gender == 'Male') {
@@ -99,7 +123,23 @@ function App() {
 
     genderCounts()
     getMeanAge()
-  }, [pets])
+
+  }, [filteredPets, pets])
+
+  useEffect(() => {
+
+    const filterPets = () => {
+      let filteredPets = pets.filter(pet => {
+        if (pet.name.toLowerCase().includes(name.toLowerCase()) && pet.species.toLowerCase().includes(species.toLowerCase()) && pet.breeds.primary.toLowerCase().includes(breed_primary.toLowerCase())) {
+          return pet
+        }
+      })
+      setFilteredPets(filteredPets)
+    }
+
+    filterPets()
+
+  }, [name, species, breed_primary, pets])
 
 
   const extract_breed = (pet) => {
@@ -117,15 +157,17 @@ function App() {
 
       <div className='header'>
         <h1>Pet Adoption Search</h1>
-        <input></input>
+        <input className="search-bar" type="text" placeholder="Pet Name" onChange={event => { setName(event.target.value) }} />
+        <input className="search-bar" type="text" placeholder="Pet Breed" onChange={event => { setBreed_primary(event.target.value) }} />
+        <input className="search-bar" type="text" placeholder="Pet Species" onChange={event => { setSpecies(event.target.value) }} />
       </div>
-
+      
       {
         // ternary operator to render the dashboard
         pets.length > 0 &&
         <div className='dashboard'>
           <div>
-            <h2>Number of pets: {pets.length}</h2>
+            <h2>Number of pets: {filteredPets.length}</h2>
           </div>
           <div>
             <h2>Avg Age of Pets: {meanAge}</h2>
@@ -139,10 +181,9 @@ function App() {
       }
 
       <div className='Pet-container'>
-        {
-          // ternary operator to render a list of the pets
-          pets.length > 0 ? pets.map((pet) => {
-            return <Pet
+        {filteredPets.length > 0 ? (
+          filteredPets.map((pet) => (
+            <Pet
               key={pet.id}
               name={pet.name}
               species={pet.species}
@@ -152,8 +193,21 @@ function App() {
               status={pet.status}
               size={pet.size}
             />
-          }) : <p>Loading...</p>
-        }
+          ))
+        ) : (
+          pets.map((pet) => (
+            <Pet
+              key={pet.id}
+              name={pet.name}
+              species={pet.species}
+              breed_primary={extract_breed(pet)}
+              gender={pet.gender}
+              age={pet.age}
+              status={pet.status}
+              size={pet.size}
+            />
+          ))
+        )}
       </div>
 
     </div>
