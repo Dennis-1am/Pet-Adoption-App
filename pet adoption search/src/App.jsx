@@ -1,6 +1,7 @@
-import { useEffect, useState, ReactRouter, Link } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import Pet from './components/pet'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 const API_SECRET = import.meta.env.VITE_API_SECRET;
@@ -17,6 +18,9 @@ function App() {
 
   const [meanAge, setMeanAge] = useState(0);
   const [ageLabel, setAgeLabel] = useState('');
+  const [babyCount, setBabyCount] = useState(0);
+  const [youngCount, setYoungCount] = useState(0);
+  const [adultCount, setAdultCount] = useState(0);
   const [maleCount, setMaleCount] = useState(0);
   const [femaleCount, setFemaleCount] = useState(0);
 
@@ -62,26 +66,34 @@ function App() {
   useEffect(() => {
     const getMeanAge = () => {
       let totalAge = 0
-      
+      let bCount = 0
+      let yCount = 0
+      let aCount = 0
       // ternary operator to check if the filtered pets array is empty or not is empty then use the pets array
 
       filteredPets.length > 0 ? filteredPets.forEach(pet => {
         if (pet.age === 'Baby') {
           totalAge += 1
+          bCount += 1
         } else if (pet.age === 'Young') {
           totalAge += 2
+          yCount += 1
         } else if (pet.age === 'Adult') {
           totalAge += 3
+          aCount += 1
         }
       }) : pets.forEach(pet => {
         if (pet.age === 'Baby') {
           totalAge += 1
+          bCount += 1
         }
         else if (pet.age === 'Young') {
           totalAge += 2
+          yCount += 1
         }
         else if (pet.age === 'Adult') {
           totalAge += 3
+          aCount += 1
         }
       })
 
@@ -95,6 +107,9 @@ function App() {
         setAgeLabel('Adult')
       }
 
+      setBabyCount(bCount)
+      setYoungCount(yCount)
+      setAdultCount(aCount)
       setMeanAge(meanAge_val)
     }
 
@@ -163,6 +178,17 @@ function App() {
     }
   }
 
+  const genderData = [
+    { name: 'Male', uv: maleCount, pv: 2400, amt: 2400 },
+    { name: 'Female', uv: femaleCount, pv: 1398, amt: 2210 }
+  ];
+
+  const ageData = [
+    { name: 'Baby', uv: babyCount, pv: 2400, amt: 2400 },
+    { name: 'Young', uv: youngCount, pv: 1398, amt: 2210 },
+    { name: 'Adult', uv: adultCount, pv: 9800, amt: 2290 }
+  ];
+  
   return (
     // make the container wait 4 seconds before rendering the entire page to simulate a loading screen
 
@@ -236,6 +262,28 @@ function App() {
         )}
       </div>
 }
+    <div className='bar-chart'>
+          <ResponsiveContainer width="50%" height={300}>
+            <BarChart data={genderData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="uv" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+          <ResponsiveContainer width="50%" height={300}>
+            <BarChart data={ageData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="uv" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+      </div>
 
     </div>
   )

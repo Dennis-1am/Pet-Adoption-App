@@ -62,6 +62,7 @@ const PetInfoPage = () => {
                 {pet.breeds && pet.breeds.primary ? <p>{pet.breeds.primary}</p> : null}
                 {pet.age ? <p>{pet.age}</p> : null}
                 {pet.size ? <p>{pet.size}</p> : null}
+                {pet.status ? <p>{pet.status}</p> : null}
                 {pet.description ? <p>{pet.description}</p> : null}
             </>
             {pet.tags && pet.tags.length > 0 ? <p>{pet.tags.join(', ')}</p> : null}
