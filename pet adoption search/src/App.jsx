@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, ReactRouter, Link } from 'react'
 import './App.css'
 import Pet from './components/pet'
 
@@ -23,8 +23,6 @@ function App() {
   useEffect(() => { // this is a useeffect hook that will run at the start of the app and get the access token from the api
 
     const getToken = async () => {
-      // wait 4 seconds before fetching the access token to simulate a loading screen
-      await new Promise(r => setTimeout(r, 3000))
       const response = await fetch('https://api.petfinder.com/v2/oauth2/token', {
         method: 'POST',
         body: `grant_type=client_credentials&client_id=${API_KEY}&client_secret=${API_SECRET}`,
@@ -40,7 +38,7 @@ function App() {
       getToken().catch(console.error)
     }
 
-  })
+  }, [access_token])
 
   useEffect(() => { // this is a useeffect hook that will run when the access token is set and get the pets from the api
 
@@ -139,7 +137,6 @@ function App() {
       setFilteredPets(filteredPets)
     }
 
-
     // if two of the three search fields are not empty then filter the pets array and set the filtered pets array
     if (name && species && breed_primary) {
       setFilteredPets(pets.filter(pet => {
@@ -212,6 +209,7 @@ function App() {
           filteredPets.map((pet) => (
             <Pet
               key={pet.id}
+              petId={pet.id}
               name={pet.name}
               species={pet.species}
               breed_primary={extract_breed(pet)}
@@ -225,6 +223,7 @@ function App() {
           pets.map((pet) => (
             <Pet
               key={pet.id}
+              id={pet.id}
               name={pet.name}
               species={pet.species}
               breed_primary={extract_breed(pet)}
@@ -243,3 +242,5 @@ function App() {
 }
 
 export default App
+
+export { API_KEY, API_SECRET }

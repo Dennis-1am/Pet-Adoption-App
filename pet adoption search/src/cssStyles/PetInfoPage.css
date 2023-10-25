@@ -1,0 +1,59 @@
+.petInfoBox {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100rem;
+    padding: 50px;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 15%/50%;
+    box-shadow: 0 0 10px #ccc;
+    background-color: #fff;
+    
+}
+
+.petInfoBox img {
+    border-radius: 15%/12%;
+    width: 30%;
+    height: 10%;
+    margin-right: 50px;
+}
+
+.petDescriptionBox {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50rem;
+    border: 1px solid #ccc;
+    /* set border radius on the right hand side */
+    border-radius: 0 10% 10% 0;
+    box-shadow: 0 0 10px #ccc;
+    background-color: #fff;
+    /* set line height  */
+    line-height: 1.5;
+    text-align: center;
+    height: 40rem;
+
+
+}
+
+.petDescriptionBox h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 10px;
+}
+
+.petDescriptionBox p {
+    font-size: 1.5rem;
+    margin: 10px;
+}
+
+.petContactBox {
+    display: flex;
+    flex-direction: row;
+    background-color: coral;
+}

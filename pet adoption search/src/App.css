@@ -152,3 +152,35 @@
   box-shadow: 0 0 10px rgba(220, 136, 136, 0.25);
   transition: all 0.5s ease;
 }
+
+nav {
+  position: fixed; 
+  top: 0; 
+  right: 50px; 
+}
+
+.home-link 
+{
+  text-align: center;
+  border:1px dotted white;
+  border-radius: 10px;
+  background:#91776b;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  width:10rem;
+  height:75px;
+  transition: all 0.5s ease;
+}
+
+.no_underline
+{
+  text-decoration: none;
+  color: white;
+}
+
+.home-link:hover
+{
+  background:#c69292;
+  color:white;
+  transition: all 0.5s ease;
+}
